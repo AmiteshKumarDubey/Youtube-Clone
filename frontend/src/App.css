@@ -22,7 +22,10 @@ body {
   align-items: center;
   padding: 0 16px;
   height: 56px;
-  background-color: #0f0f0f;
+  background-color: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -312,6 +315,7 @@ body {
   margin-bottom: 12px;
   background-color: #272727;
   aspect-ratio: 16/9;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .video-thumbnail img {
@@ -319,7 +323,12 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.3s;
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.video-card:hover .video-thumbnail {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  transform: translateY(-4px);
 }
 
 .video-card:hover .video-thumbnail img {

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import VideoCard from "../components/VideoCard";
 import { videoAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { FiHistory, FiTrash2 } from "react-icons/fi";
+import { FaHistory, FaTrash } from "react-icons/fa";
+
 
 export default function History() {
   const [videos, setVideos] = useState([]);
@@ -36,7 +37,7 @@ export default function History() {
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center">
-          <FiHistory className="text-3xl text-red-600 mr-4" />
+          <FaHistory className="text-3xl text-red-600 mr-4" />
           <h1 className="text-3xl font-bold">Watch History</h1>
         </div>
         {videos.length > 0 && (
@@ -44,7 +45,7 @@ export default function History() {
             onClick={clearHistory}
             className="flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg"
           >
-            <FiTrash2 className="mr-2" />
+            <FaTrash className="mr-2" />
             Clear all history
           </button>
         )}

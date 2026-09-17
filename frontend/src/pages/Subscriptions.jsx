@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getSubscriptionVideos } from '../services/youtubeApi';
+import { getSubscriptionVideos } from '../services/api';
 import VideoCard from '../components/VideoCard';
+
 
 const Subscriptions = () => {
   const [videos, setVideos] = useState([]);

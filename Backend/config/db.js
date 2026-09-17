@@ -1,16 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const connectDB = async (mongoURI) => {
+const connectDB = async () => {
   try {
-    await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-    console.log('MongoDB connected');
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/youtube_clone');
+    console.log(`🍃 MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
-    console.error(err);
-    process.exit(1);
+    console.warn(`⚠️ MongoDB connection warning: ${err.message}. Backend will run with fallback mode.`);
   }
 };
 
-module.exports = connectDB;
+export default connectDB;
+

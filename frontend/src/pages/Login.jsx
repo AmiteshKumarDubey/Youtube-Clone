@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
+import { FaYoutube, FaEnvelope, FaLock, FaUser, FaBolt } from "react-icons/fa";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,7 +9,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [displayName, setDisplayName] = useState("");
-  const { login, signup, googleLogin } = useAuth();
+  const { login, signup, demoLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,66 +23,108 @@ export default function Login() {
       }
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Authentication failed");
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await googleLogin();
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
-    }
+  const handleDemoSignIn = () => {
+    demoLogin();
+    navigate("/");
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-2xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-white mb-2 text-center">
-          {isLogin ? "Sign In" : "Create Account"}
+    <div style={{
+      minHeight: "80vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px 16px",
+      backgroundColor: "#0f0f0f",
+      color: "#ffffff"
+    }}>
+      <div style={{
+        backgroundColor: "#1f1f1f",
+        borderRadius: "16px",
+        padding: "36px 32px",
+        width: "100%",
+        maxWidth: "420px",
+        border: "1px solid #333",
+        boxShadow: "0 12px 32px rgba(0,0,0,0.5)"
+      }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+          <FaYoutube style={{ color: "#ff0000", fontSize: "36px" }} />
+          <span style={{ fontSize: "24px", fontWeight: "bold" }}>YouTube</span>
+        </div>
+
+        <h1 style={{ fontSize: "22px", fontWeight: "bold", textAlign: "center", marginBottom: "8px" }}>
+          {isLogin ? "Sign in to YouTube" : "Create your Account"}
         </h1>
-        <p className="text-gray-400 text-center mb-8">
-          {isLogin ? "New to YouTube Clone?" : "Already have an account?"}{" "}
+        <p style={{ color: "#aaa", fontSize: "14px", textAlign: "center", marginBottom: "24px" }}>
+          {isLogin ? "Need an account?" : "Already have an account?"}{" "}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-400 hover:text-blue-300"
+            style={{ color: "#3ea6ff", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", fontWeight: "bold" }}
           >
-            {isLogin ? "Sign up now" : "Sign in"}
+            {isLogin ? "Sign up" : "Sign in"}
           </button>
         </p>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-700 text-red-400 p-3 rounded-lg mb-6">
+          <div style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", border: "1px solid #ef4444", color: "#f87171", padding: "10px 14px", borderRadius: "8px", fontSize: "14px", marginBottom: "20px" }}>
             {error}
           </div>
         )}
 
         <button
-          onClick={handleGoogleLogin}
-          className="w-full bg-white hover:bg-gray-100 text-black font-semibold py-3 px-4 rounded-lg flex items-center justify-center mb-6"
+          onClick={handleDemoSignIn}
+          style={{
+            width: "100%",
+            backgroundColor: "#3ea6ff",
+            color: "#0f0f0f",
+            fontWeight: "bold",
+            fontSize: "15px",
+            padding: "12px",
+            borderRadius: "24px",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            marginBottom: "20px",
+            transition: "opacity 0.2s"
+          }}
         >
-          <FaGoogle className="mr-3" />
-          Continue with Google
+          <FaBolt />
+          1-Click Demo Sign In
         </button>
 
-        <div className="flex items-center my-6">
-          <div className="flex-1 border-t border-gray-700"></div>
-          <span className="px-4 text-gray-400">or</span>
-          <div className="flex-1 border-t border-gray-700"></div>
+        <div style={{ display: "flex", alignItems: "center", margin: "20px 0" }}>
+          <div style={{ flex: 1, borderBottom: "1px solid #333" }}></div>
+          <span style={{ padding: "0 12px", color: "#777", fontSize: "13px" }}>OR EMAIL</span>
+          <div style={{ flex: 1, borderBottom: "1px solid #333" }}></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {!isLogin && (
             <div>
-              <label className="block text-gray-400 mb-2">Display Name</label>
-              <div className="relative">
-                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              <label style={{ display: "block", color: "#ccc", fontSize: "13px", marginBottom: "6px" }}>Full Name</label>
+              <div style={{ position: "relative" }}>
+                <FaUser style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#777" }} />
                 <input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500"
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#121212",
+                    border: "1px solid #3b3b3b",
+                    borderRadius: "8px",
+                    padding: "12px 14px 12px 42px",
+                    color: "#fff",
+                    fontSize: "14px",
+                    boxSizing: "border-box"
+                  }}
                   placeholder="Enter your name"
                   required={!isLogin}
                 />
@@ -91,30 +133,48 @@ export default function Login() {
           )}
 
           <div>
-            <label className="block text-gray-400 mb-2">Email</label>
-            <div className="relative">
-              <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            <label style={{ display: "block", color: "#ccc", fontSize: "13px", marginBottom: "6px" }}>Email</label>
+            <div style={{ position: "relative" }}>
+              <FaEnvelope style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#777" }} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500"
-                placeholder="Enter your email"
+                style={{
+                  width: "100%",
+                  backgroundColor: "#121212",
+                  border: "1px solid #3b3b3b",
+                  borderRadius: "8px",
+                  padding: "12px 14px 12px 42px",
+                  color: "#fff",
+                  fontSize: "14px",
+                  boxSizing: "border-box"
+                }}
+                placeholder="you@example.com"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-gray-400 mb-2">Password</label>
-            <div className="relative">
-              <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            <label style={{ display: "block", color: "#ccc", fontSize: "13px", marginBottom: "6px" }}>Password</label>
+            <div style={{ position: "relative" }}>
+              <FaLock style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#777" }} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500"
-                placeholder="Enter your password"
+                style={{
+                  width: "100%",
+                  backgroundColor: "#121212",
+                  border: "1px solid #3b3b3b",
+                  borderRadius: "8px",
+                  padding: "12px 14px 12px 42px",
+                  color: "#fff",
+                  fontSize: "14px",
+                  boxSizing: "border-box"
+                }}
+                placeholder="••••••••"
                 required
                 minLength={6}
               />
@@ -123,22 +183,22 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg mt-6"
+            style={{
+              width: "100%",
+              backgroundColor: "#cc0000",
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: "15px",
+              padding: "12px",
+              borderRadius: "24px",
+              border: "none",
+              cursor: "pointer",
+              marginTop: "8px"
+            }}
           >
             {isLogin ? "Sign In" : "Create Account"}
           </button>
         </form>
-
-        <p className="text-gray-400 text-sm text-center mt-8">
-          By continuing, you agree to our{" "}
-          <Link to="/terms" className="text-blue-400 hover:text-blue-300">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="text-blue-400 hover:text-blue-300">
-            Privacy Policy
-          </Link>
-        </p>
       </div>
     </div>
   );

@@ -193,6 +193,10 @@ export const filterVideosByCategory = (videos, category) => {
   return videos.filter(video => video.category === category);
 };
 
+export const videoAPI = {
+  getAll: async () => ({ data: ALL_VIDEOS })
+};
+
 export default {
   getAllVideos,
   getPopularVideos,
@@ -201,5 +205,7 @@ export default {
   getVideoById,
   getRelatedVideos,
   getSubscriptionVideos,
-  filterVideosByCategory
+  filterVideosByCategory,
+  videoAPI
 };
+
