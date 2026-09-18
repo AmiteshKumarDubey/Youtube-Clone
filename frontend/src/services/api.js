@@ -193,6 +193,76 @@ export const filterVideosByCategory = (videos, category) => {
   return videos.filter(video => video.category === category);
 };
 
+export const SHORTS_DATA = [
+  {
+    _id: 'short_1',
+    title: 'Top 5 VS Code Secrets Every Developer Needs! 🔥 #shorts #coding',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    channel: 'CodeWithHarry',
+    channelAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Harry',
+    likes: 124500,
+    dislikes: 120,
+    commentsCount: 342,
+    audioTitle: 'CodeWithHarry • Original Audio',
+    isSubscribed: false,
+    isLiked: false
+  },
+  {
+    _id: 'short_2',
+    title: 'Build a Full YouTube Shorts Player in React ⚡ #javascript #react',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    channel: 'Technical Guruji',
+    channelAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guruji',
+    likes: 89300,
+    dislikes: 95,
+    commentsCount: 215,
+    audioTitle: 'Technical Guruji • Trending Sound',
+    isSubscribed: true,
+    isLiked: false
+  },
+  {
+    _id: 'short_3',
+    title: 'Next.js 15 Server Actions Crash Course 🚀 #webdev #nextjs',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    channel: 'CarryMinati',
+    channelAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carry',
+    likes: 245000,
+    dislikes: 310,
+    commentsCount: 1240,
+    audioTitle: 'CarryMinati • Epic Beat',
+    isSubscribed: false,
+    isLiked: false
+  },
+  {
+    _id: 'short_4',
+    title: 'AI Coding Tools in 2026: Magic or Hype? 🤖 #ai #programming',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyplays.mp4',
+    channel: 'Beebom',
+    channelAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Beebom',
+    likes: 67200,
+    dislikes: 42,
+    commentsCount: 180,
+    audioTitle: 'Beebom Tech Sound',
+    isSubscribed: false,
+    isLiked: false
+  },
+  {
+    _id: 'short_5',
+    title: '10 SECRETS to Master CSS Grid & Flexbox! 🎨 #css #frontend',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    channel: 'T-Series',
+    channelAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Tseries',
+    likes: 312000,
+    dislikes: 540,
+    commentsCount: 890,
+    audioTitle: 'T-Series • Music Track',
+    isSubscribed: true,
+    isLiked: false
+  }
+];
+
+export const getShortsVideos = () => SHORTS_DATA;
+
 export const videoAPI = {
   getAll: async () => ({ data: ALL_VIDEOS })
 };
@@ -205,7 +275,9 @@ export default {
   getVideoById,
   getRelatedVideos,
   getSubscriptionVideos,
+  getShortsVideos,
   filterVideosByCategory,
   videoAPI
 };
+
 
