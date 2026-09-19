@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getVideoDetails, fetchPopularVideos } from '../services/youtubeApi';
+import { useWatch } from '../context/WatchContext';
 import VideoCard from '../components/VideoCard';
 import '../styles/VideoPage.css';
 
@@ -12,6 +13,7 @@ const VideoPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+  const { addToHistory, toggleWatchLater, isInWatchLater } = useWatch();
 
   useEffect(() => {
     const fetchVideoData = async () => {
@@ -19,6 +21,9 @@ const VideoPage = () => {
       try {
         const videoData = await getVideoDetails(id);
         setVideo(videoData);
+        if (videoData) {
+          addToHistory(videoData);
+        }
         
         // Generate related videos (different from current video)
         generateRelatedVideos(videoData);
@@ -31,6 +36,7 @@ const VideoPage = () => {
     
     fetchVideoData();
   }, [id]);
+
 
   const generateRelatedVideos = async (currentVideo) => {
     try {
@@ -172,11 +178,15 @@ const VideoPage = () => {
               <span>Download</span>
             </button>
 
-            {/* Save */}
-            <button className="action-btn">
-              <i className="fas fa-plus"></i>
-              <span>Save</span>
+            {/* Save / Watch Later */}
+            <button 
+              className={`action-btn ${isInWatchLater(video.id) ? 'active' : ''}`}
+              onClick={() => toggleWatchLater(video)}
+            >
+              <i className={`fas ${isInWatchLater(video.id) ? 'fa-check' : 'fa-clock'}`}></i>
+              <span>{isInWatchLater(video.id) ? 'Saved' : 'Watch later'}</span>
             </button>
+
 
             {/* More */}
             <button className="action-btn">

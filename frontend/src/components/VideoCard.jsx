@@ -1,10 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useWatch } from '../context/WatchContext';
+import { FaClock, FaCheck } from 'react-icons/fa';
 import '../styles/Home.css';
 
 const VideoCard = ({ video }) => {
+  const { toggleWatchLater, isInWatchLater } = useWatch();
   const { id, snippet, statistics, contentDetails } = video;
   const videoId = id || snippet?.videoId || Math.random().toString(36).substring(2);
+  const isSaved = isInWatchLater(videoId);
+  
+  const handleWatchLaterClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWatchLater(video);
+  };
   
   const formatViews = (views) => {
     const num = parseInt(views || '0');
@@ -49,7 +59,7 @@ const VideoCard = ({ video }) => {
 
   return (
     <Link to={`/video/${videoId}`} className="video-card">
-      <div className="thumbnail-container">
+      <div className="thumbnail-container" style={{ position: 'relative' }}>
         <img 
           src={snippet?.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
           alt={snippet?.title}
@@ -59,7 +69,33 @@ const VideoCard = ({ video }) => {
           }}
         />
         <div className="video-duration">{getDuration()}</div>
+
+        {/* Quick Watch Later button */}
+        <button
+          onClick={handleWatchLaterClick}
+          title={isSaved ? "Remove from Watch Later" : "Watch Later"}
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            backgroundColor: isSaved ? '#3ea6ff' : 'rgba(0, 0, 0, 0.8)',
+            color: isSaved ? '#000' : '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '6px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 5,
+            fontSize: '14px',
+            transition: 'transform 0.15s ease'
+          }}
+        >
+          {isSaved ? <FaCheck /> : <FaClock />}
+        </button>
       </div>
+
       
       <div className="video-info">
         <div className="channel-avatar">
