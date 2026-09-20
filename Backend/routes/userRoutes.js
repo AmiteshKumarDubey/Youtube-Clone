@@ -72,10 +72,25 @@ router.post('/watchlater', (req, res) => {
   }
 });
 
-router.delete('/watchlater/:id', (req, res) => {
-  const { id } = req.params;
-  userStores.watchLater = userStores.watchLater.filter(v => (v.id || v._id) !== id);
-  res.json({ success: true, watchLater: userStores.watchLater });
+// --- SUBSCRIPTIONS ROUTES ---
+const userSubscriptions = ['T-Series', 'SET India', 'Technical Guruji', 'CodeWithHarry'];
+
+router.get('/subscriptions', (req, res) => {
+  res.json(userSubscriptions);
+});
+
+router.post('/subscriptions', (req, res) => {
+  const { channel } = req.body;
+  if (!channel) return res.status(400).json({ msg: 'Channel name required' });
+
+  const index = userSubscriptions.indexOf(channel);
+  if (index > -1) {
+    userSubscriptions.splice(index, 1);
+    res.json({ success: true, isSubscribed: false, subscriptions: userSubscriptions });
+  } else {
+    userSubscriptions.push(channel);
+    res.json({ success: true, isSubscribed: true, subscriptions: userSubscriptions });
+  }
 });
 
 export default router;

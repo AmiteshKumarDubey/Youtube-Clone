@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getVideoDetails, fetchPopularVideos } from '../services/youtubeApi';
 import { useWatch } from '../context/WatchContext';
 import VideoCard from '../components/VideoCard';
@@ -7,7 +7,9 @@ import '../styles/VideoPage.css';
 
 const VideoPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [video, setVideo] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [relatedVideos, setRelatedVideos] = useState([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -197,20 +199,30 @@ const VideoPage = () => {
 
         {/* Channel Info */}
         <div className="channel-info-section">
-          <div className="channel-avatar-large">
+          <div 
+            className="channel-avatar-large"
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate(`/channel/${encodeURIComponent(video.snippet?.channelTitle || '')}`)}
+          >
             {video.snippet?.channelTitle?.charAt(0) || 'C'}
           </div>
           <div className="channel-details">
-            <h3 className="channel-name">{video.snippet?.channelTitle || 'Channel Name'}</h3>
+            <h3 
+              className="channel-name"
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate(`/channel/${encodeURIComponent(video.snippet?.channelTitle || '')}`)}
+            >
+              {video.snippet?.channelTitle || 'Channel Name'}
+            </h3>
             <p className="subscriber-count">
               {formatNumber(video.statistics?.subscriberCount || '10000000')} subscribers
             </p>
           </div>
           <button 
-            className={`subscribe-btn ${isSubscribed ? 'subscribed' : ''}`}
-            onClick={() => setIsSubscribed(!isSubscribed)}
+            className={`subscribe-btn ${isSubscribed(video.snippet?.channelTitle) ? 'subscribed' : ''}`}
+            onClick={() => toggleSubscribe(video.snippet?.channelTitle)}
           >
-            {isSubscribed ? (
+            {isSubscribed(video.snippet?.channelTitle) ? (
               <>
                 <i className="fas fa-check"></i>
                 <span>Subscribed</span>
@@ -223,6 +235,7 @@ const VideoPage = () => {
             )}
           </button>
         </div>
+
 
         {/* Video Description */}
         <div className="video-description-box">

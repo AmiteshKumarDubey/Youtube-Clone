@@ -155,6 +155,35 @@ export function WatchProvider({ children }) {
     return likedVideos.some(item => (item.id || item._id) === videoId);
   };
 
+  const [subscriptions, setSubscriptions] = useState(() => {
+    try {
+      const saved = localStorage.getItem('yt_subscriptions');
+      return saved ? JSON.parse(saved) : ['T-Series', 'SET India', 'Technical Guruji', 'CodeWithHarry'];
+    } catch (e) {
+      return ['T-Series', 'SET India', 'Technical Guruji', 'CodeWithHarry'];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('yt_subscriptions', JSON.stringify(subscriptions));
+  }, [subscriptions]);
+
+  const toggleSubscribe = (channelName) => {
+    if (!channelName) return;
+    setSubscriptions(prev => {
+      if (prev.includes(channelName)) {
+        return prev.filter(c => c !== channelName);
+      } else {
+        return [...prev, channelName];
+      }
+    });
+    axios.post(`${API_BASE_URL}/subscriptions`, { channel: channelName }).catch(() => {});
+  };
+
+  const isSubscribed = (channelName) => {
+    return subscriptions.includes(channelName);
+  };
+
   const value = {
     history,
     addToHistory,
@@ -172,7 +201,11 @@ export function WatchProvider({ children }) {
 
     likedVideos,
     toggleLikeVideo,
-    isLikedVideo
+    isLikedVideo,
+
+    subscriptions,
+    toggleSubscribe,
+    isSubscribed
   };
 
   return (
@@ -181,3 +214,4 @@ export function WatchProvider({ children }) {
     </WatchContext.Provider>
   );
 }
+

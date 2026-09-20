@@ -14,6 +14,7 @@ import LikedVideos from './pages/LikedVideos';
 import Subscriptions from './pages/Subscriptions';
 import Shorts from './pages/Shorts';
 import Login from './pages/Login';
+import Channel from './pages/Channel';
 import Upload from './pages/Upload';
 import './styles/Home.css';
 
@@ -35,6 +36,8 @@ function App() {
                 <Route path="/watch-later" element={<Watchlater />} />
                 <Route path="/liked-videos" element={<LikedVideos />} />
                 <Route path="/upload" element={<Upload />} />
+                <Route path="/channel" element={<Channel />} />
+                <Route path="/channel/:name" element={<Channel />} />
                 
                 <Route path="/trending" element={<Home category="trending" />} />
                 <Route path="/music" element={<Home category="music" />} />
@@ -49,9 +52,9 @@ function App() {
                 <Route path="/category/:category" element={<Home />} />
                 <Route path="/video/:id" element={<VideoPage />} />
                 <Route path="/search" element={<SearchResults />} />
-                <Route path="/channel" element={<Home category="channel" />} />
                 <Route path="/explore/:category" element={<Home />} />
               </Routes>
+
             </div>
           </div>
         </Router>
