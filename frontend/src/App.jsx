@@ -15,6 +15,7 @@ import Subscriptions from './pages/Subscriptions';
 import Shorts from './pages/Shorts';
 import Login from './pages/Login';
 import Channel from './pages/Channel';
+import Playlists from './pages/Playlists';
 import Upload from './pages/Upload';
 import './styles/Home.css';
 
@@ -35,9 +36,11 @@ function App() {
                 <Route path="/history" element={<History />} />
                 <Route path="/watch-later" element={<Watchlater />} />
                 <Route path="/liked-videos" element={<LikedVideos />} />
+                <Route path="/playlists" element={<Playlists />} />
                 <Route path="/upload" element={<Upload />} />
                 <Route path="/channel" element={<Channel />} />
                 <Route path="/channel/:name" element={<Channel />} />
+
                 
                 <Route path="/trending" element={<Home category="trending" />} />
                 <Route path="/music" element={<Home category="music" />} />

@@ -184,6 +184,72 @@ export function WatchProvider({ children }) {
     return subscriptions.includes(channelName);
   };
 
+  // --- PLAYLISTS FUNCTIONS ---
+  const [playlists, setPlaylists] = useState(() => {
+    try {
+      const saved = localStorage.getItem('yt_playlists');
+      return saved ? JSON.parse(saved) : [
+        {
+          id: 'pl_1',
+          title: 'Web Dev Mastery 🚀',
+          description: 'Best fullstack coding tutorials',
+          isPrivate: false,
+          videos: []
+        }
+      ];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('yt_playlists', JSON.stringify(playlists));
+  }, [playlists]);
+
+  const createPlaylist = (title, description = '', isPrivate = false) => {
+    if (!title.trim()) return null;
+    const newPlaylist = {
+      id: `pl_${Date.now()}`,
+      title: title.trim(),
+      description: description.trim(),
+      isPrivate,
+      createdAt: new Date().toISOString(),
+      videos: []
+    };
+
+    setPlaylists(prev => [newPlaylist, ...prev]);
+    axios.post(`${API_BASE_URL}/playlists`, newPlaylist).catch(() => {});
+    return newPlaylist;
+  };
+
+  const deletePlaylist = (playlistId) => {
+    setPlaylists(prev => prev.filter(p => p.id !== playlistId));
+    axios.delete(`${API_BASE_URL}/playlists/${playlistId}`).catch(() => {});
+  };
+
+  const toggleVideoInPlaylist = (playlistId, video) => {
+    if (!video) return;
+    const videoId = video.id || video._id;
+
+    setPlaylists(prev => prev.map(pl => {
+      if (pl.id === playlistId) {
+        const exists = pl.videos.some(v => (v.id || v._id) === videoId);
+        const updatedVideos = exists 
+          ? pl.videos.filter(v => (v.id || v._id) !== videoId)
+          : [{ ...video, id: videoId, _id: videoId }, ...pl.videos];
+        return { ...pl, videos: updatedVideos };
+      }
+      return pl;
+    }));
+
+    axios.post(`${API_BASE_URL}/playlists/${playlistId}/video`, { video }).catch(() => {});
+  };
+
+  const isVideoInPlaylist = (playlistId, videoId) => {
+    const pl = playlists.find(p => p.id === playlistId);
+    return pl ? pl.videos.some(v => (v.id || v._id) === videoId) : false;
+  };
+
   const value = {
     history,
     addToHistory,
@@ -205,7 +271,13 @@ export function WatchProvider({ children }) {
 
     subscriptions,
     toggleSubscribe,
-    isSubscribed
+    isSubscribed,
+
+    playlists,
+    createPlaylist,
+    deletePlaylist,
+    toggleVideoInPlaylist,
+    isVideoInPlaylist
   };
 
   return (
@@ -214,4 +286,5 @@ export function WatchProvider({ children }) {
     </WatchContext.Provider>
   );
 }
+
 

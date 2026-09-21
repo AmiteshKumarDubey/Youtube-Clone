@@ -72,25 +72,86 @@ router.post('/watchlater', (req, res) => {
   }
 });
 
-// --- SUBSCRIPTIONS ROUTES ---
-const userSubscriptions = ['T-Series', 'SET India', 'Technical Guruji', 'CodeWithHarry'];
-
-router.get('/subscriptions', (req, res) => {
-  res.json(userSubscriptions);
+// --- LIKED VIDEOS ROUTES ---
+router.get('/liked', (req, res) => {
+  res.json(userStores.likedVideos);
 });
 
-router.post('/subscriptions', (req, res) => {
-  const { channel } = req.body;
-  if (!channel) return res.status(400).json({ msg: 'Channel name required' });
+router.post('/liked', (req, res) => {
+  const { video } = req.body;
+  if (!video) return res.status(400).json({ msg: 'Video required' });
 
-  const index = userSubscriptions.indexOf(channel);
-  if (index > -1) {
-    userSubscriptions.splice(index, 1);
-    res.json({ success: true, isSubscribed: false, subscriptions: userSubscriptions });
+  const videoId = video.id || video._id;
+  const exists = userStores.likedVideos.some(v => (v.id || v._id) === videoId);
+
+  if (exists) {
+    userStores.likedVideos = userStores.likedVideos.filter(v => (v.id || v._id) !== videoId);
+    res.json({ success: true, isLiked: false, likedVideos: userStores.likedVideos });
   } else {
-    userSubscriptions.push(channel);
-    res.json({ success: true, isSubscribed: true, subscriptions: userSubscriptions });
+    userStores.likedVideos = [{ ...video, likedAt: new Date() }, ...userStores.likedVideos];
+    res.json({ success: true, isLiked: true, likedVideos: userStores.likedVideos });
   }
+});
+
+// --- PLAYLISTS ROUTES ---
+const userPlaylists = [
+  {
+    id: 'pl_1',
+    title: 'Web Dev Mastery 🚀',
+    description: 'Best tutorials for fullstack JavaScript & React',
+    isPrivate: false,
+    createdAt: new Date(),
+    videos: []
+  }
+];
+
+router.get('/playlists', (req, res) => {
+  res.json(userPlaylists);
+});
+
+router.post('/playlists', (req, res) => {
+  const { title, description, isPrivate } = req.body;
+  if (!title) return res.status(400).json({ msg: 'Playlist title required' });
+
+  const newPlaylist = {
+    id: `pl_${Date.now()}`,
+    title,
+    description: description || '',
+    isPrivate: Boolean(isPrivate),
+    createdAt: new Date(),
+    videos: []
+  };
+
+  userPlaylists.unshift(newPlaylist);
+  res.json({ success: true, playlist: newPlaylist, playlists: userPlaylists });
+});
+
+router.post('/playlists/:id/video', (req, res) => {
+  const { id } = req.params;
+  const { video } = req.body;
+  const playlist = userPlaylists.find(p => p.id === id);
+
+  if (!playlist) return res.status(404).json({ msg: 'Playlist not found' });
+
+  const videoId = video.id || video._id;
+  const exists = playlist.videos.some(v => (v.id || v._id) === videoId);
+
+  if (exists) {
+    playlist.videos = playlist.videos.filter(v => (v.id || v._id) !== videoId);
+    res.json({ success: true, added: false, playlist });
+  } else {
+    playlist.videos.unshift(video);
+    res.json({ success: true, added: true, playlist });
+  }
+});
+
+router.delete('/playlists/:id', (req, res) => {
+  const { id } = req.params;
+  const index = userPlaylists.findIndex(p => p.id === id);
+  if (index > -1) {
+    userPlaylists.splice(index, 1);
+  }
+  res.json({ success: true, playlists: userPlaylists });
 });
 
 export default router;
