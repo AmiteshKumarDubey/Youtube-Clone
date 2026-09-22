@@ -276,15 +276,32 @@ router.get('/shorts', (req, res) => {
   res.json(sampleShorts);
 });
 
-// Search videos
-router.get('/search/:query', (req, res) => {
-  const query = req.params.query.toLowerCase();
-  const results = sampleVideos.filter(video => 
-    video.title.toLowerCase().includes(query) || 
-    video.description.toLowerCase().includes(query) ||
-    video.tags.some(tag => tag.toLowerCase().includes(query))
-  );
-  res.json(results);
+// Create / Upload new video
+router.post('/', (req, res) => {
+  const { title, description, videoUrl, thumbnailUrl, category, channel, duration } = req.body;
+
+  if (!title || !videoUrl) {
+    return res.status(400).json({ error: 'Title and video URL are required' });
+  }
+
+  const newVideo = {
+    _id: `vid_${Date.now()}`,
+    title,
+    description: description || '',
+    videoUrl,
+    thumbnailUrl: thumbnailUrl || `https://picsum.photos/320/180?random=${Date.now()}`,
+    views: 1,
+    likes: 0,
+    userId: 'user_creator',
+    username: channel || 'Creative Studio',
+    category: category || 'music',
+    duration: duration || '10:00',
+    createdAt: new Date(),
+    tags: [category || 'video']
+  };
+
+  sampleVideos.unshift(newVideo);
+  res.status(201).json(newVideo);
 });
 
 export default router;

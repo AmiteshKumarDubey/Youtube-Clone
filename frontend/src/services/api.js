@@ -129,10 +129,11 @@ const formatViews = (num) => {
   return num.toString();
 };
 
-const ALL_VIDEOS = generateMoreVideos();
+export const ALL_VIDEOS = generateMoreVideos();
 
 // Export functions
 export const getAllVideos = () => ALL_VIDEOS;
+
 
 export const getPopularVideos = (limit = 50) => {
   return [...ALL_VIDEOS]

@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getVideoDetails, fetchPopularVideos } from '../services/youtubeApi';
 import { useWatch } from '../context/WatchContext';
 import VideoCard from '../components/VideoCard';
+import Comments from '../components/Comments';
 import '../styles/VideoPage.css';
+
 
 const VideoPage = () => {
   const { id } = useParams();
@@ -246,7 +248,11 @@ const VideoPage = () => {
             <button className="show-more-btn">Show more</button>
           </div>
         </div>
+
+        {/* Interactive Comments Section */}
+        <Comments videoId={id} />
       </div>
+
 
       {/* Related Videos Sidebar */}
       <div className="related-videos-sidebar">
