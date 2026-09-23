@@ -3,20 +3,69 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Home.css';
 
+const SEARCH_SUGGESTIONS_POOL = [
+  'iPhone 16 Pro Max unboxing',
+  'CarryMinati Minecraft scary villager',
+  'Lo-Fi hip hop beats to relax / study to',
+  'Virat Kohli 50th century highlights',
+  'Full stack web development course 2024',
+  'Stranger Things season 5 finale trailer',
+  'GTA 6 trailer official 4K',
+  'Animal Arjan Vailly song 4K',
+  'Coldplay Yellow official music video',
+  'ISRO space mission launch live stream',
+  'The Kapil Sharma Show funniest moments',
+  'React JS full course for beginners',
+  'Tailwind CSS vs Vanilla CSS tutorial',
+  'MS Dhoni last ball IPL finish',
+  'Unbox Therapy newest tech gadgets',
+];
+
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // Voice Search Modal State
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceQueryText, setVoiceQueryText] = useState('');
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const searchRef = useRef(null);
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
 
+  // Handle Search Input Change & Autocomplete Filter
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+
+    if (val.trim().length > 0) {
+      const filtered = SEARCH_SUGGESTIONS_POOL.filter(item =>
+        item.toLowerCase().includes(val.toLowerCase())
+      );
+      setSuggestions(filtered.length > 0 ? filtered : SEARCH_SUGGESTIONS_POOL.slice(0, 5));
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const executeSearch = (queryToUse) => {
+    const finalQuery = queryToUse || searchQuery;
+    if (finalQuery.trim()) {
+      setShowSuggestions(false);
+      navigate(`/search?q=${encodeURIComponent(finalQuery.trim())}`);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
+    executeSearch();
   };
 
   const handleKeyPress = (e) => {
@@ -25,9 +74,48 @@ const Navbar = () => {
     }
   };
 
+  const selectSuggestion = (term) => {
+    setSearchQuery(term);
+    setShowSuggestions(false);
+    executeSearch(term);
+  };
+
+  // Voice Search Handler
+  const handleVoiceSearchOpen = () => {
+    setShowVoiceModal(true);
+    setIsListening(true);
+    setVoiceQueryText('');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          setVoiceQueryText(transcript);
+          setSearchQuery(transcript);
+          setIsListening(false);
+          setTimeout(() => {
+            setShowVoiceModal(false);
+            executeSearch(transcript);
+          }, 1200);
+        };
+        recognition.onerror = () => setIsListening(false);
+        recognition.onend = () => setIsListening(false);
+        recognition.start();
+      } catch (err) {
+        console.log('Voice recognition error:', err);
+      }
+    }
+  };
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
@@ -64,22 +152,39 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="navbar-center">
-        <div className="search-container">
+      <div className="navbar-center" ref={searchRef}>
+        <div className="search-container" style={{ position: 'relative' }}>
           <input
             type="text"
             className="search-input"
             placeholder="Search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleInputChange}
+            onFocus={() => searchQuery.trim() && setShowSuggestions(true)}
             onKeyPress={handleKeyPress}
           />
           <button className="search-btn" onClick={handleSearch}>
             <i className="fas fa-search"></i>
           </button>
-          <button className="voice-search-btn" title="Search with your voice">
+          <button className="voice-search-btn" title="Search with your voice" onClick={handleVoiceSearchOpen}>
             <i className="fas fa-microphone"></i>
           </button>
+
+          {/* Autocomplete Suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="search-suggestions-dropdown">
+              {suggestions.map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="suggestion-item" 
+                  onClick={() => selectSuggestion(item)}
+                >
+                  <i className="fas fa-history"></i>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -184,6 +289,59 @@ const Navbar = () => {
           </button>
         )}
       </div>
+
+      {/* Voice Search Modal */}
+      {showVoiceModal && (
+        <div className="voice-modal-overlay" onClick={() => setShowVoiceModal(false)}>
+          <div className="voice-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="voice-modal-close" onClick={() => setShowVoiceModal(false)}>
+              <i className="fas fa-times"></i>
+            </button>
+
+            <h2 style={{ fontSize: '20px', fontWeight: '500', margin: '8px 0 4px 0' }}>Search with your voice</h2>
+            <p style={{ color: '#aaa', fontSize: '14px' }}>
+              {isListening ? 'Listening...' : voiceQueryText ? `Recognized: "${voiceQueryText}"` : 'Click microphone or pick a sample voice query below'}
+            </p>
+
+            <button 
+              className={`mic-pulse-btn ${isListening ? 'listening' : ''}`}
+              onClick={() => setIsListening(!isListening)}
+            >
+              <i className="fas fa-microphone"></i>
+            </button>
+
+            {voiceQueryText && (
+              <div style={{ fontSize: '18px', color: '#3ea6ff', fontWeight: 'bold', marginBottom: '16px' }}>
+                "{voiceQueryText}"
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginTop: '12px' }}>
+              {['React JS Tutorial', 'Lo-Fi Beats 24/7', 'CarryMinati', 'GTA 6 Trailer', 'iPhone 16 Pro'].map((sample, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => selectSuggestion(sample)}
+                  style={{
+                    background: '#303030',
+                    border: 'none',
+                    color: '#fff',
+                    padding: '8px 14px',
+                    borderRadius: '16px',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    transition: '0.2s'
+                  }}
+                  onMouseOver={(e) => e.target.style.background = '#444'}
+                  onMouseOut={(e) => e.target.style.background = '#303030'}
+                >
+                  <i className="fas fa-microphone" style={{ fontSize: '11px', marginRight: '6px', color: '#ff0000' }}></i>
+                  {sample}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

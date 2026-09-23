@@ -27,71 +27,85 @@ const REAL_VIDEO_IDS = [
   'vCadcBR95oU', // Another Brick in the Wall
 ];
 
-// YouTube-like video templates
+// YouTube-like video templates with diverse categories
 const VIDEO_TEMPLATES = [
-  // Bollywood
+  // Music
   { title: 'Mega Victory Mass Lyrical Video | Chiranjeevi | Venkatesh | Anil Ravipudi', channel: 'T-Series Telugu', category: 'music' },
-  { title: 'The RajaSaab Trailer 2.0 (Telugu) | Prabhas | Maruthi | Thaman S', channel: 'People Media Factory', category: 'films' },
   { title: 'Naal Nachna | Dhurandhar | Ranveer Singh, Sara Ali Khan', channel: 'Saregama Music', category: 'music' },
-  { title: 'Stranger Things 5 | Finale Trailer | Netflix', channel: 'Netflix', category: 'films' },
-  { title: 'TOXIC - Trailer | Rocking Star Yash | Nayanthara', channel: 'T-Series', category: 'films' },
   { title: 'Jawan 4K Video Songs | Zinda Banda | Shah Rukh Khan', channel: 'T-Series', category: 'music' },
   { title: 'Animal All Songs | Arjan Vailly | Satranga', channel: 'T-Series', category: 'music' },
-  
+  { title: 'Lo-Fi Hip Hop Radio 📚 Beats to Relax / Study to 24/7', channel: 'Lofi Girl', category: 'music' },
+  { title: 'Coldplay - Yellow (Official Video)', channel: 'Coldplay', category: 'music' },
+  { title: 'Arijit Singh Ultimate Love Mashup 2024', channel: 'Bollywood Melodies', category: 'music' },
+
   // Gaming
   { title: 'I Found Scary Villager City in Minecraft...', channel: 'CarryMinati', category: 'gaming' },
   { title: 'How To Get All 16 NEW BRAINROTS in Find the Brainrot', channel: 'Mythione', category: 'gaming' },
   { title: 'POOR vs RICH Mega Motorcycle Ramp In GTA 5', channel: 'Karry Kraft', category: 'gaming' },
   { title: 'MINECRAFT BUT VILLAGERS ARE SCARY!', channel: 'Techno Gamerz', category: 'gaming' },
-  { title: 'GTA 6 OFFICIAL TRAILER REACTION', channel: 'CarryMinati', category: 'gaming' },
-  
-  // Tech
+  { title: 'GTA 6 OFFICIAL TRAILER 2 REACTION & BREAKDOWN', channel: 'Gamers Zone', category: 'gaming' },
+  { title: 'Valorant Champions Tour Grand Finals Highlights', channel: 'VALORANT Esports', category: 'gaming' },
+
+  // Tech & Learning
   { title: 'iPhone 16 Pro Max Unboxing & Review', channel: 'Technical Guruji', category: 'technology' },
-  { title: 'Samsung Galaxy S24 Ultra First Look', channel: 'Trakin Tech', category: 'technology' },
+  { title: 'Samsung Galaxy S24 Ultra First Look & Camera Test', channel: 'Trakin Tech', category: 'technology' },
   { title: 'New Tech Gadgets 2024 You Must Have', channel: 'Unbox Therapy', category: 'technology' },
-  
-  // News
-  { title: 'Election Results 2024 Live Updates', channel: 'Times Now', category: 'news' },
-  { title: 'Stock Market Today: Sensex Nifty Live', channel: 'CNBC TV18', category: 'news' },
-  
-  // Entertainment
+  { title: 'Full Stack Web Development Course 2024 (HTML, CSS, JS, React)', channel: 'CodeWithHarry', category: 'learning' },
+  { title: 'Artificial Intelligence & Neural Networks Explained Simply', channel: 'Fireship', category: 'learning' },
+
+  // News & Live
+  { title: 'Election Results 2024 Live Updates & Analysis', channel: 'Times Now', category: 'news' },
+  { title: 'Stock Market Today: Sensex Nifty Live Trading Session', channel: 'CNBC TV18', category: 'news' },
+  { title: 'ISRO Space Mission Launch LIVE Stream 🚀', channel: 'ISRO Official', category: 'live' },
+  { title: 'Global World News 24/7 Live Stream', channel: 'BBC News', category: 'live' },
+
+  // Comedy & Entertainment
   { title: 'CarryMinati Roasts | Funny Compilation 2024', channel: 'CarryMinati', category: 'comedy' },
-  { title: 'BB Ki Vines | Funny Videos Compilation', channel: 'BB Ki Vines', category: 'comedy' },
-  { title: 'AIB Comedy Sketches Best Of', channel: 'AIB', category: 'comedy' },
-  { title: 'Kapil Sharma Show Best Episodes', channel: 'SET India', category: 'comedy' },
-  
+  { title: 'BB Ki Vines | Funny Sketches & Standup', channel: 'BB Ki Vines', category: 'comedy' },
+  { title: 'The Kapil Sharma Show - Funniest Moments', channel: 'SET India', category: 'comedy' },
+  { title: 'Stranger Things 5 | Finale Official Trailer | Netflix', channel: 'Netflix', category: 'films' },
+
   // Sports
-  { title: 'Virat Kohli 50th Century | World Cup 2023', channel: 'ICC', category: 'sports' },
-  { title: 'MS Dhoni Last Match | IPL Final 2023', channel: 'IPL', category: 'sports' },
-  { title: 'Messi World Cup 2022 Final Goal', channel: 'FIFA', category: 'sports' },
+  { title: 'Virat Kohli 50th ODI Century | World Cup Highlights', channel: 'ICC', category: 'sports' },
+  { title: 'MS Dhoni Last Ball Finish | IPL Highlights', channel: 'IPL Official', category: 'sports' },
+  { title: 'Messi Unbelievable Solo Goal | FIFA World Cup', channel: 'FIFA', category: 'sports' },
+  { title: 'Real Madrid vs Barcelona - El Clasico Thriller', channel: 'LaLiga Santander', category: 'sports' },
 ];
 
 // Generate unique videos
-const generateUniqueVideos = (count) => {
+const generateUniqueVideos = (count, categoryFilter = 'all') => {
   const videos = [];
   const usedTitles = new Set();
   
+  // Filter templates matching category if specified
+  let templates = VIDEO_TEMPLATES;
+  if (categoryFilter && categoryFilter !== 'all') {
+    const cLower = categoryFilter.toLowerCase();
+    const filtered = VIDEO_TEMPLATES.filter(t => 
+      t.category.toLowerCase().includes(cLower) ||
+      (cLower === 'tech' && t.category === 'technology') ||
+      (cLower === 'learning' && (t.category === 'learning' || t.category === 'technology')) ||
+      (cLower === 'trending' && t.title) ||
+      (cLower === 'recent' && t.title) ||
+      (cLower === 'watched' && t.title) ||
+      (cLower === 'new' && t.title)
+    );
+    if (filtered.length > 0) {
+      templates = filtered;
+    }
+  }
+
   for (let i = 0; i < count; i++) {
-    let videoTemplate;
-    let attempts = 0;
-    
-    // Ensure unique title
-    do {
-      videoTemplate = VIDEO_TEMPLATES[Math.floor(Math.random() * VIDEO_TEMPLATES.length)];
-      attempts++;
-      if (attempts > 100) break; // Prevent infinite loop
-    } while (usedTitles.has(videoTemplate.title) && attempts < 100);
-    
-    usedTitles.add(videoTemplate.title);
+    let videoTemplate = templates[i % templates.length];
     
     const videoId = REAL_VIDEO_IDS[i % REAL_VIDEO_IDS.length] || `video-${Date.now()}-${i}`;
     const views = Math.floor(Math.random() * 10000000) + 100000;
-    const daysAgo = Math.floor(Math.random() * 365);
+    const daysAgo = Math.floor(Math.random() * 30);
     
     videos.push({
       id: videoId,
       snippet: {
-        title: `${videoTemplate.title} ${i + 1}`,
+        title: `${videoTemplate.title}${count > 20 ? ` #${i + 1}` : ''}`,
         channelTitle: videoTemplate.channel,
         publishedAt: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString(),
         thumbnails: {
@@ -121,7 +135,7 @@ const generateUniqueVideos = (count) => {
     });
   }
   
-  console.log(`📺 Generated ${videos.length} unique videos`);
+  console.log(`📺 Generated ${videos.length} unique videos for category: ${categoryFilter}`);
   return videos;
 };
 
@@ -135,7 +149,7 @@ export const fetchPopularVideos = async (page = 1, category = 'all') => {
   console.log(`🎬 Fetching page ${page} videos (${category})...`);
   
   try {
-    // Try real API first
+    // Try real API first if not custom filtered
     const response = await axios.get(`${BASE_URL}/videos`, {
       params: {
         part: 'snippet,statistics,contentDetails',
@@ -147,37 +161,28 @@ export const fetchPopularVideos = async (page = 1, category = 'all') => {
     });
     
     const realVideos = response.data.items || [];
-    const mockVideos = generateUniqueVideos(20);
+    const mockVideos = generateUniqueVideos(30, category);
     
-    // Combine and filter by category
     let allVideos = [...realVideos, ...mockVideos];
     
     if (category !== 'all') {
-      allVideos = allVideos.filter(video => 
-        video.snippet.tags?.includes(category) || 
-        video.snippet.title?.toLowerCase().includes(category)
+      const catLower = category.toLowerCase();
+      const filtered = allVideos.filter(video => 
+        video.snippet.tags?.some(t => t.toLowerCase().includes(catLower)) || 
+        video.snippet.title?.toLowerCase().includes(catLower)
       );
+      allVideos = filtered.length >= 4 ? filtered : generateUniqueVideos(24, category);
     }
     
-    // Add pagination
-    const startIndex = (page - 1) * 50;
-    const paginatedVideos = allVideos.slice(startIndex, startIndex + 50);
+    const startIndex = (page - 1) * 30;
+    const paginatedVideos = allVideos.slice(startIndex, startIndex + 30);
     
     console.log(`✅ Page ${page}: ${paginatedVideos.length} unique videos`);
     return paginatedVideos;
     
   } catch (error) {
-    console.log('❌ Using unique mock videos');
-    const mockVideos = generateUniqueVideos(50);
-    
-    if (category !== 'all') {
-      return mockVideos.filter(video => 
-        video.snippet.tags?.includes(category) || 
-        video.snippet.title?.toLowerCase().includes(category)
-      );
-    }
-    
-    return mockVideos;
+    console.log('❌ Using generated videos for category:', category);
+    return generateUniqueVideos(30, category);
   }
 };
 
